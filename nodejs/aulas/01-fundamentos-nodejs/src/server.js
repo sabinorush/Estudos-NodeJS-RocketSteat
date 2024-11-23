@@ -1,4 +1,5 @@
 import http from 'http'
+import { json } from './middleware/json.js'
 
 // CommonJS => require
 // ESModules => import/export
@@ -12,24 +13,28 @@ import http from 'http'
 
 const users = []
 
-const server = http.createServer((request, response) => {
-  const { method, url } = request
+const server = http.createServer(async (req, res) => {
+  const { method, url } = req
 
+  await json(req, res)
+  
   if (method === 'GET' && url === '/users') {
-      return response
-      .setHeader('Content-type', 'application/json')
+
+      return res
       .end(JSON.stringify(users))
   }
+
   if(method === 'POST' && url === '/users') {
+    const {name, email} = req.body
     users.push({
       id: 1,
-      name: "Gustavo Sabino",
-      email: "gu.sabino@hotmail.com"
+      name,
+      email
     })
-    return response.writeHead(201).end()
+    return res.writeHead(201).end()
   }
 
-  return response.writeHead(404).end('Not found')
+  return res.writeHead(404).end('Not found')
 })
 
 server.listen(3333)
