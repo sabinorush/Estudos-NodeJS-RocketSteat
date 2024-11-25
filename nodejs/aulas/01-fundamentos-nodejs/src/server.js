@@ -31,7 +31,7 @@ const server = http.createServer(async (req, res) => {
   if(route) {//Se existir uma solicitação na rota
     const routeParams = req.url.match(route.path)
 
-    console.log(routeParams)
+   req.params = { ...routeParams.groups}
 
     return route.handler(req, res)//enviar para o handler a requisição e a resposta.
   }
